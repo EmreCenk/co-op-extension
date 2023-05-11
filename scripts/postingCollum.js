@@ -1,6 +1,6 @@
 
 
-export const Posting = class {
+const Posting = class {
     constructor(
         appStatus, Id, jobTitle, organization, division, openings,
         internalStatus, city, level, applications, deadline
@@ -18,7 +18,7 @@ export const Posting = class {
         this.deadline = deadline;
     }
     
-    getHiringPercentage(){ // probability of you being randomly picked for interview
+    getHiringPercentage(){ // probability of you being randomly hired
         return ( (this.openings + 1) / this.applications );
     }
 

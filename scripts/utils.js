@@ -1,4 +1,4 @@
 
-export function getNumberOfEntries(){
+function getNumberOfEntries(){
     return document.getElementsByTagName("tr").length;
 }
