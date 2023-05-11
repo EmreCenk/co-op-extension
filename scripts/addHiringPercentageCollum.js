@@ -64,7 +64,7 @@ function insertCollum(){
     // adding header:
     const header = rows[0].children[2];
     const headerCopy = header.cloneNode();
-    headerCopy.innerText = "Hiring Probability [a/b]";
+    headerCopy.innerText = "Hiring Probability";
     headerCopy.style.color = "#0C4A7B";
     rows[0].appendChild(headerCopy);
 
@@ -75,6 +75,8 @@ function insertCollum(){
     let i = 0;
     for ( currentRow of rows ){
         const currentId = currentRow.children[idIndex].innerText;
+        if (currentId == "ID") continue; //header row;
+        
         const currentProbability = getJobProbability[currentId];
         const header = currentRow.children[2];
         const headerCopy = header.cloneNode();
