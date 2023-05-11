@@ -9,13 +9,9 @@
     "default_icon": "hello_extensions.png"
   },
   "content_scripts": [
-    { "js": ["scripts/content.js", "scripts/orderByHiringPercentage.js"],
+    { "js": ["scripts/content.js", "scripts/addHiringPercentageCollum.js"],
       "matches": [
         "https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm"
       ] }
-  ],
-  "web_accessible_resources": [{
-    "resources": ["scripts/postingsPageObject.js"],
-    "matches": ["<all_urls>"]
-  }]
+  ]
 }

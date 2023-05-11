@@ -1,11 +1,24 @@
+// TODO: Check if you're actually on the postings table
+//      -> "for my program", "viewed", etc. usually implies you're not on the right page
 
-console.log("orderByHiringPercentage.js running");
+console.log("12312123.js running");
+
+
+function getPostingRows(){
+    const rows = document.getElementsByTagName("tr");
+    return rows;
+}
+
+function getNumberOfEntries(){
+    return getPostingRows().length; // rows[0] is the header row
+}
+
 
 function getCollumIndex( collumName ){
     const collumheaders = document.getElementsByTagName("th");
     let orgCollumIndex = 0;
     for (let i = 0; i < collumheaders.length; i++){
-        if ( collumheaders[i].innerText.toLowerCase().includes( collumName ) ) {
+        if ( collumheaders[i].innerText.toLowerCase().includes( collumName.toLowerCase() ) ) {
             orgCollumIndex = i;
             break;
         }
@@ -44,13 +57,32 @@ function sortJobsByHiringProbability(){
     return jobArray;
 }
 
-function getNumberOfEntries(){
-    return getPostingRows().length; // rows[0] is the header row
-}
+function insertCollum(){
+    console.log("ACTUALLY HERE");
+    const rows = getPostingRows();
 
-function getPostingRows(){
-    const rows = document.getElementsByTagName("tr");
-    return rows;
+    // adding header:
+    const header = rows[0].children[2];
+    const headerCopy = header.cloneNode();
+    headerCopy.innerText = "Hiring Probability [a/b]";
+    headerCopy.style.color = "#0C4A7B";
+    rows[0].appendChild(headerCopy);
+
+    // adding probabilities:
+    const getJobProbability = mapJobIdToPercentage(rows);
+    const idIndex = getCollumIndex("id");
+    
+    let i = 0;
+    for ( currentRow of rows ){
+        const currentId = currentRow.children[idIndex].innerText;
+        const currentProbability = getJobProbability[currentId];
+        const header = currentRow.children[2];
+        const headerCopy = header.cloneNode();
+        headerCopy.innerText = `${  (currentProbability* 100).toFixed(2)  }%`;
+        currentRow.appendChild( headerCopy );
+        i++;
+    }
 }
 
 console.log("SORTED:\n\n", sortJobsByHiringProbability())
+insertCollum();
