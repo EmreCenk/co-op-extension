@@ -76,7 +76,7 @@ function insertCollum(){
     for ( currentRow of rows ){
         const currentId = currentRow.children[idIndex].innerText;
         if (currentId == "ID") continue; //header row;
-        
+
         const currentProbability = getJobProbability[currentId];
         const header = currentRow.children[2];
         const headerCopy = header.cloneNode();
@@ -86,5 +86,4 @@ function insertCollum(){
     }
 }
 
-console.log("SORTED:\n\n", sortJobsByHiringProbability())
 insertCollum();
