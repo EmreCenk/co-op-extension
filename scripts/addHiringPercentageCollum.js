@@ -58,16 +58,9 @@ function sortJobsByHiringProbability(){
     return jobArray;
 }
 
-function insertCollum(){
-    console.log("ACTUALLY HERE");
+function insertPercentageCollums( collumToInsertBefore = "Internal Status" ){
     const rows = getPostingRows();
-
-    // adding header:
-    const header = rows[0].children[2];
-    const headerCopy = header.cloneNode();
-    headerCopy.innerText = "Hiring Probability";
-    headerCopy.style.color = "#0C4A7B";
-    rows[0].appendChild(headerCopy);
+    const collumIndex = getCollumIndex( collumToInsertBefore );
 
     // adding probabilities:
     const getJobProbability = mapJobIdToPercentage(rows);
@@ -82,9 +75,21 @@ function insertCollum(){
         const header = currentRow.children[2];
         const headerCopy = header.cloneNode();
         headerCopy.innerText = `${  (currentProbability* 100).toFixed(2)  }%`;
-        currentRow.appendChild( headerCopy );
+        const referenceCell = currentRow.children[ collumIndex ];
+        currentRow.insertBefore( headerCopy, referenceCell );
         i++;
     }
+
+    // we have to update the header at the end, otherwise it shifts everything, making getCollumIndex(_) unreliable
+    const header = rows[0].children[2];
+    const childCopy = document.createElement("a");
+    childCopy.innerText = "Hiring Probability";
+    childCopy.style = "cursor: pointer";
+    const headerCopy = header.cloneNode();
+    headerCopy.style.color = "#0C4A7B";
+    headerCopy.replaceChildren( childCopy );
+    const referenceCell = rows[0].children[ collumIndex ];
+    rows[0].insertBefore( headerCopy, referenceCell );
 }
 
-insertCollum();
+insertPercentageCollums("ID");

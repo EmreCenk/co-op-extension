@@ -19,7 +19,7 @@ function getPostingRows(){
 
 function getProbabilityHeader(){
     const rows = getPostingRows();
-    return rows[0].children[13]
+    return rows[0].children[ getCollumIndex('probability') ];
 }
 
 function getRowPercentage( row ){
@@ -67,7 +67,7 @@ function replaceTableWithSorted(){
 }
 function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     const header = getProbabilityHeader();
-    header.onclick = onclickFunction();
+    header.onclick = function(){ onclickFunction(); };
 }
 
 // replaceTableWithSorted();
