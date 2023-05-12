@@ -43,13 +43,21 @@ function getOrderedRows(){
         if ( isNaN(percentage) ) continue; // header row
         rowsToSort.push( [row, percentage] );
     }
-    sortedRows = rowsToSort.sort( (x, y) => sort2dArray(x, y, index = 1) );
+    const sortedRows = rowsToSort.sort( (x, y) => sort2dArray(x, y, index = 1) );
     return sortedRows;
 }
 
 function insertSortedRows(){
     const sortedRows = getOrderedRows();
+    const rowsOnly = [];
+    for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
     const tableElement = document.getElementsByTagName("tbody")[0];
+    tableElement.replaceChildren(...rowsOnly);
+    // for (let i = 0; i < tableElement.children.length; i++){
+    //     const currentChild = tableElement.children[i];
+    //     tableElement.replaceChild()
+    //     console.log(currentChild);
+    // }
 }
 function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     const header = getProbabilityHeader();
