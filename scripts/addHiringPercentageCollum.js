@@ -1,5 +1,6 @@
 // TODO: Check if you're actually on the postings table
 //      -> "for my program", "viewed", etc. usually implies you're not on the right page
+// TODO: If you sort by the default buttons, that resets the collum we manually added :(
 
 console.log("12312123.js running");
 

@@ -47,19 +47,28 @@ function getOrderedRows(){
     return sortedRows;
 }
 
-function insertSortedRows(){
+function correctScrollbarWidth(){
+    const tableWidth = document.getElementById("postingsTableDiv").scrollWidth;
+    const scrollBar = document.getElementsByClassName("scrollboxContent")[0];
+    scrollBar.style.width = `${tableWidth}px`
+}
+
+function replaceTable(rowsOnly){
+    const tableElement = document.getElementsByTagName("tbody")[0];
+    tableElement.replaceChildren(...rowsOnly);
+    correctScrollbarWidth();
+}
+
+function replaceTableWithSorted(){
     const sortedRows = getOrderedRows();
     const rowsOnly = [];
     for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
-    const tableElement = document.getElementsByTagName("tbody")[0];
-    tableElement.replaceChildren(...rowsOnly);
-    // for (let i = 0; i < tableElement.children.length; i++){
-    //     const currentChild = tableElement.children[i];
-    //     tableElement.replaceChild()
-    //     console.log(currentChild);
-    // }
+    replaceTable(rowsOnly);
 }
 function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     const header = getProbabilityHeader();
     header.onclick = onclickFunction();
 }
+
+// replaceTableWithSorted();
+setHeaderOnclick( replaceTableWithSorted )
