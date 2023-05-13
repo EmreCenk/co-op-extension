@@ -1,21 +1,5 @@
 
-function getCollumIndex( collumName ){
-    const collumheaders = document.getElementsByTagName("th");
-    let orgCollumIndex = 0;
-    for (let i = 0; i < collumheaders.length; i++){
-        if ( collumheaders[i].innerText.toLowerCase().includes( collumName.toLowerCase() ) ) {
-            orgCollumIndex = i;
-            break;
-        }
-    }
-    return orgCollumIndex + 1; // +1 because the first header is empty
-}
 
-
-function getPostingRows(){
-    const rows = document.getElementsByTagName("tr");
-    return rows;
-}
 
 function getProbabilityHeader(){
     const rows = getPostingRows();
@@ -59,7 +43,7 @@ function replaceTable(rowsOnly){
     correctScrollbarWidth();
 }
 
-function replaceTableWithSorted(){
+function handleTableSorting(){
     const sortedRows = getOrderedRows();
     const rowsOnly = [];
     for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
@@ -70,5 +54,21 @@ function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     header.onclick = function(){ onclickFunction(); };
 }
 
-// replaceTableWithSorted();
-setHeaderOnclick( replaceTableWithSorted )
+
+function bindToTableUpdates(){
+    const observer = new MutationObserver((mutations, observer) => {
+        if ( mutations.length >= postingsOnPage ) return;
+        if ( getCollumIndex("probability") != 1 ) return;
+        insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
+        setHeaderOnclick( handleTableSorting );
+      });
+    observer.observe(document, {
+        subtree: true,
+        childList: true
+    });    
+}
+
+const postingsOnPage = getPostingRows().length;
+bindToTableUpdates()
+insertPercentageCollums("ID");
+setHeaderOnclick( handleTableSorting )

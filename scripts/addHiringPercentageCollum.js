@@ -1,6 +1,7 @@
 // TODO: Check if you're actually on the postings table
 //      -> "for my program", "viewed", etc. usually implies you're not on the right page
 // TODO: If you sort by the default buttons, that resets the collum we manually added :(
+// TODO: Make compatible with other waterloo works extension
 
 console.log("12312123.js running");
 
@@ -91,5 +92,3 @@ function insertPercentageCollums( collumToInsertBefore = "Internal Status" ){
     const referenceCell = rows[0].children[ collumIndex ];
     rows[0].insertBefore( headerCopy, referenceCell );
 }
-
-insertPercentageCollums("ID");
