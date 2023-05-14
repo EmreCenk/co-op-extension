@@ -43,32 +43,82 @@ function replaceTable(rowsOnly){
     correctScrollbarWidth();
 }
 
+// function rowsAreSorted(){
+//     const rows = getPostingRows();
+//     const getJobProbability = mapJobIdToPercentage(rows);
+//     const idIndex = getCollumIndex("id");
+//     for (let i = 0; i < rows.length - 1; i++){
+//         const currentId = rows[i].children[idIndex].innerText;
+//         const nextId = rows[i+1].children[idIndex].innerText;
+//         if (currentId == "ID") continue; //header row;
+//         const currentProbability = getJobProbability[currentId];
+//         const nextProbablity = getJobProbability[nextId];
+//         if ( nextProbablity > currentProbability ) return false;
+//     }
+//     return true;
+// }
+
+let isSorted = false;
 function handleTableSorting(){
-    const sortedRows = getOrderedRows();
-    const rowsOnly = [];
-    for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
-    replaceTable(rowsOnly);
+    if (!isSorted){
+        const sortedRows = getOrderedRows();
+        const rowsOnly = [];
+        for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
+        replaceTable(rowsOnly);
+    }
+    else{
+        const jobButton = getTagsWithText("a", "organization")[0];
+        jobButton.click();
+    }
+
+    isSorted = !isSorted;
+
 }
+
 function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     const header = getProbabilityHeader();
     header.onclick = function(){ onclickFunction(); };
 }
 
-
 function bindToTableUpdates(){
     const observer = new MutationObserver((mutations, observer) => {
-        if ( mutations.length >= postingsOnPage ) return;
-        if ( getCollumIndex("probability") != 1 ) return;
-        insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
-        setHeaderOnclick( handleTableSorting );
+        if ( mutations.length >= postingsOnPage ) return
+        if ( getCollumIndex("probability") == 1 ){ // 1 is the default output if it doesn't find anything
+            insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
+            setHeaderOnclick( handleTableSorting );
+        }
       });
+
     observer.observe(document, {
         subtree: true,
         childList: true
-    });    
+    });
 }
 
+function getTagsWithText(tag, text){
+    const tagElements = document.getElementsByTagName( tag );
+    let finalElements = []
+    for (elem of tagElements){ 
+        if ( elem.innerText.toLowerCase().includes( text.toLowerCase() ) )
+            finalElements.push(elem);
+    }
+    return finalElements;
+}
+
+// function handleShortlisting(){
+//     // shortlisting rerenders the page, which means we need to re-render our custom collum and the state it's in
+//     const shortListButtons = getTagsWithText("a", "shortlist");
+//     for (currentElem of shortListButtons){
+//         // if it used to be sorted, we need to restore that state:
+//         currentElem.addEventListener( "click",  function(){
+//                 console.log("clicked!", isSorted);
+//                 if (isSorted) handleTableSorting();
+//             }
+//         );
+//     }
+// }
+
 const postingsOnPage = getPostingRows().length;
-bindToTableUpdates()
+bindToTableUpdates();
 insertPercentageCollums("ID");
-setHeaderOnclick( handleTableSorting )
+setHeaderOnclick( handleTableSorting );
