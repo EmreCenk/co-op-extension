@@ -15,28 +15,38 @@ function getNumberOfEntries(){
     return getPostingRows().length; // rows[0] is the header row
 }
 
+const azureMode = true;
 
 function getCollumIndex( collumName ){
     const collumheaders = document.getElementsByTagName("th");
-    let orgCollumIndex = 0;
+    let orgCollumIndex = -2; // -1 by default (+1 at end)
+    let leftShift = 0; // waterlooworks extension hides some collums, shifting things to the left
     for (let i = 0; i < collumheaders.length; i++){
+        // console.log(i, "->", window.getComputedStyle(collumheaders[i]).display, "->", collumheaders[i].innerText);
+        // if ( window.getComputedStyle(collumheaders[i]).display === 'none' ) leftShift++;
         if ( collumheaders[i].innerText.toLowerCase().includes( collumName.toLowerCase() ) ) {
-            orgCollumIndex = i;
+            orgCollumIndex = i - leftShift;
             break;
         }
     }
-    return orgCollumIndex + 1; // +1 because the first header is empty
+    return orgCollumIndex + !azureMode; // +1 because the first header is empty
 }
 
 function mapJobIdToPercentage(rows){
-    const applicantNumIndex = getCollumIndex("application");
-    const openingNumIndex = getCollumIndex("opening");
+    let applicantNumIndex = getCollumIndex("application")
+    if ( applicantNumIndex < 0 ) applicantNumIndex = getCollumIndex("apps");
+
+    let openingNumIndex = getCollumIndex("opening");
+    if (openingNumIndex < 0 ) openingNumIndex = getCollumIndex("open");
+
     const idIndex = getCollumIndex("id");
+
     let jobIdToPercentage = {}; 
     for ( currentRow of rows ){
         const applicantNum = parseInt( currentRow.children[applicantNumIndex].innerText );
         const openingNum = parseInt( currentRow.children[openingNumIndex].innerText );
         const jobId = currentRow.children[idIndex].innerText;
+        // console.log(jobId, openingNum, applicantNum);
         if (jobId === "ID") continue; // header (aka first row)
         jobIdToPercentage[jobId] = openingNum / (applicantNum + 1); // +1 to include you in the probability, and to avoid division by 0
     }
@@ -59,7 +69,7 @@ function sortJobsByHiringProbability(){
     return jobArray;
 }
 
-function insertPercentageCollums( collumToInsertBefore = "Internal Status" ){
+function insertPercentageCollums( collumToInsertBefore ){
     const rows = getPostingRows();
     const collumIndex = getCollumIndex( collumToInsertBefore );
 
@@ -82,13 +92,17 @@ function insertPercentageCollums( collumToInsertBefore = "Internal Status" ){
     }
 
     // we have to update the header at the end, otherwise it shifts everything, making getCollumIndex(_) unreliable
-    const header = rows[0].children[2];
+    
+    let headerIndex = 0;
+    if ( azureMode ) headerIndex = 1;
+
+    const header = rows[ headerIndex ].children[2];
     const childCopy = document.createElement("a");
     childCopy.innerText = "Hiring Probability";
     childCopy.style = "cursor: pointer";
     const headerCopy = header.cloneNode();
     headerCopy.style.color = "#0C4A7B";
     headerCopy.replaceChildren( childCopy );
-    const referenceCell = rows[0].children[ collumIndex ];
-    rows[0].insertBefore( headerCopy, referenceCell );
+    const referenceCell = rows[headerIndex].children[ collumIndex ];
+    rows[headerIndex].insertBefore( headerCopy, referenceCell );
 }

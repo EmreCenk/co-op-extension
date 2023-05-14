@@ -58,17 +58,22 @@ function replaceTable(rowsOnly){
 //     return true;
 // }
 
+function insertSortedTables(){
+
+    const sortedRows = getOrderedRows();
+    const rowsOnly = [];
+    for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
+    replaceTable(rowsOnly);
+}
+
 let isSorted = false;
 function handleTableSorting(){
     if (!isSorted){
-        const sortedRows = getOrderedRows();
-        const rowsOnly = [];
-        for ( [row, percentage] of sortedRows ) rowsOnly.push( row );
-        replaceTable(rowsOnly);
+        insertSortedTables();
     }
     else{
-        const jobButton = getTagsWithText("a", "organization")[0];
-        jobButton.click();
+        // const jobButton = getTagsWithText("a", "organization")[0];
+        // jobButton.click();
     }
 
     isSorted = !isSorted;
@@ -83,9 +88,10 @@ function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
 function bindToTableUpdates(){
     const observer = new MutationObserver((mutations, observer) => {
         if ( mutations.length >= postingsOnPage ) return
-        if ( getCollumIndex("probability") == 1 ){ // 1 is the default output if it doesn't find anything
+        if ( getCollumIndex("probability") == -1 ){ // 1 is the default output if it doesn't find anything
             insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
+            if ( isSorted ) insertSortedTables();
         }
       });
 
