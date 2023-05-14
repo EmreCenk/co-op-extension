@@ -19,8 +19,14 @@ const azureMode = true;
 let headerIndex = 0;
 if ( azureMode ) headerIndex = 1;
 
+function getTableHeaders(){
+    const tables = document.getElementsByTagName("thead");
+    return getVisible(tables[tables.length - 1].children[0].children);
+}
 function getCollumIndex( collumName ){
-    const collumheaders = document.getElementsByTagName("th");
+    const collumheaders = getTableHeaders();
+    // const collumheaders = getVisible(document.getElementsByTagName("th"));
+    
     let orgCollumIndex = -2; // -1 by default (+1 at end)
     let leftShift = 0; // waterlooworks extension hides some collums, shifting things to the left
     for (let i = 0; i < collumheaders.length; i++){
@@ -45,10 +51,11 @@ function mapJobIdToPercentage(rows){
 
     let jobIdToPercentage = {}; 
     for ( currentRow of rows ){
-        const applicantNum = parseInt( currentRow.children[applicantNumIndex].innerText );
-        const openingNum = parseInt( currentRow.children[openingNumIndex].innerText );
-        const jobId = currentRow.children[idIndex].innerText;
-        // console.log(jobId, openingNum, applicantNum);
+        const visibleCells = getVisible(currentRow.children);
+        if (visibleCells.length <= 2) continue;
+        const applicantNum = parseInt( visibleCells[applicantNumIndex].innerText );
+        const openingNum = parseInt( visibleCells[openingNumIndex].innerText );
+        const jobId = visibleCells[idIndex].innerText;
         if (jobId === "ID") continue; // header (aka first row)
         jobIdToPercentage[jobId] = openingNum / (applicantNum + 1); // +1 to include you in the probability, and to avoid division by 0
     }
@@ -81,21 +88,22 @@ function insertPercentageCollums( collumToInsertBefore ){
     
     let i = 0;
     for ( currentRow of rows ){
-        const currentId = currentRow.children[idIndex].innerText;
+        const currentRowChildren = getVisible(currentRow.children);
+        const currentId = currentRowChildren[idIndex].innerText;
         console.log(currentId.includes("ID"));
         if (currentId.includes("ID")) continue; //header row;
 
         const currentProbability = getJobProbability[currentId];
-        const header = currentRow.children[2];
+        const header = currentRowChildren[2];
         const headerCopy = header.cloneNode();
         headerCopy.innerText = `${  (currentProbability * 100).toFixed(2)  }%`;
-        const referenceCell = currentRow.children[ collumIndex ];
+        const referenceCell = currentRowChildren[ collumIndex ];
         currentRow.insertBefore( headerCopy, referenceCell );
         i++;
     }
 
     // we have to update the header at the end, otherwise it shifts everything, making getCollumIndex(_) unreliable
-    const header = rows[ headerIndex ].children[2];
+    const header = getTableHeaders()[2];
     const childCopy = document.createElement("a");
     childCopy.innerText = "Hiring Probability";
     childCopy.style = "cursor: pointer";
@@ -104,7 +112,7 @@ function insertPercentageCollums( collumToInsertBefore ){
     if (azureMode) headerCopy.style.width = "9%";   
 
     headerCopy.replaceChildren( childCopy );
-    const referenceCell = rows[headerIndex].children[ collumIndex ];
+    const referenceCell = getTableHeaders()[ collumIndex ];
     rows[headerIndex].insertBefore( headerCopy, referenceCell );
     if (azureMode) fixWidths();
 }
@@ -117,13 +125,18 @@ function getWidth(element){
     return answer;
 }
 
+function getVisible(headers){
+    let visibleHeaders = [];
+    for (h of headers){
+        if (window.getComputedStyle(h).display === 'table-cell') visibleHeaders.push(h);
+    }
+    return visibleHeaders;
+}
+
 function fixWidths(){
     // only for azure 
     const headers = getPostingRows()[headerIndex];
-    let visibleHeaders = [];
-    for (h of headers.children){
-        if (window.getComputedStyle(h).display !== 'none') visibleHeaders.push(h);
-    }
+    let visibleHeaders = getVisible(headers.children);
 
     let widths = [ "", "",  "5%", "15%", "5%", "9%", "", "6%", "10%", "5%", ]
     // for (let i = 0; i < visibleHeaders.length; i++){

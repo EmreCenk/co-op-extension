@@ -1,18 +1,17 @@
 
 function getProbabilityIndex(){
-    const collumheaders = document.getElementsByTagName("th");
-    return getCollumIndex('probability') - ( azureMode ? parseInt(collumheaders.length/2) : 0 );
+    return getCollumIndex('probability');
 }
 
 function getProbabilityHeader(){
-    const rows = getPostingRows();
     const probabilityIndex = getProbabilityIndex();
-    return rows[headerIndex].children[ probabilityIndex ];
+    return getTableHeaders()[ probabilityIndex ];
 }
 
 function getRowPercentage( row ){
+    const cleanRow = getVisible(row.children)
     const probabilityIndex = getProbabilityIndex();
-    const percentageString = row.children[probabilityIndex].innerText;
+    const percentageString = cleanRow[probabilityIndex].innerText;
     return parseFloat(percentageString);
 }
 
@@ -91,9 +90,9 @@ function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
 
 function addObserver(){
     const observer = new MutationObserver((mutations, observer) => {
-        console.log( mutations.length );
-        if ( mutations.length >= postingsOnPage && !dealWithShortlisting) return
-        if ( getCollumIndex("probability") == -1 || getCollumIndex("probability") == -2 ){ // 1 is the default output if it doesn't find anything
+        console.log( mutations.length, dealWithShortlisting );
+        // if ( mutations.length >= postingsOnPage && !dealWithShortlisting) return
+        if ( getCollumIndex("probability") == -1 || getCollumIndex("probability") == -2 ){ 
             insertPercentageCollums(collumToInsertBefore); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
             console.log("we're here boi");
