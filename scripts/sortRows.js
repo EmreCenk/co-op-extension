@@ -1,7 +1,7 @@
 
 function getProbabilityIndex(){
     const collumheaders = document.getElementsByTagName("th");
-    return getCollumIndex('probability') - ( azureMode ? collumheaders.length/2 : 0 );
+    return getCollumIndex('probability') - ( azureMode ? parseInt(collumheaders.length/2) : 0 );
 }
 
 function getProbabilityHeader(){

@@ -82,12 +82,13 @@ function insertPercentageCollums( collumToInsertBefore ){
     let i = 0;
     for ( currentRow of rows ){
         const currentId = currentRow.children[idIndex].innerText;
-        if (currentId == "ID") continue; //header row;
+        console.log(currentId.includes("ID"));
+        if (currentId.includes("ID")) continue; //header row;
 
         const currentProbability = getJobProbability[currentId];
         const header = currentRow.children[2];
         const headerCopy = header.cloneNode();
-        headerCopy.innerText = `${  (currentProbability* 100).toFixed(2)  }%`;
+        headerCopy.innerText = `${  (currentProbability * 100).toFixed(2)  }%`;
         const referenceCell = currentRow.children[ collumIndex ];
         currentRow.insertBefore( headerCopy, referenceCell );
         i++;
@@ -100,7 +101,36 @@ function insertPercentageCollums( collumToInsertBefore ){
     childCopy.style = "cursor: pointer";
     const headerCopy = header.cloneNode();
     headerCopy.style.color = "#0C4A7B";
+    if (azureMode) headerCopy.style.width = "9%";   
+
     headerCopy.replaceChildren( childCopy );
     const referenceCell = rows[headerIndex].children[ collumIndex ];
     rows[headerIndex].insertBefore( headerCopy, referenceCell );
+    if (azureMode) fixWidths();
+}
+
+function getWidth(element){
+    const previousDisplay = window.getComputedStyle(element).display;
+    currentHeader.style.display = 'none';
+    const answer = window.getComputedStyle(element).width;
+    currentHeader.style.display = previousDisplay;
+    return answer;
+}
+
+function fixWidths(){
+    // only for azure 
+    const headers = getPostingRows()[headerIndex];
+    let visibleHeaders = [];
+    for (h of headers.children){
+        if (window.getComputedStyle(h).display !== 'none') visibleHeaders.push(h);
+    }
+
+    let widths = [ "", "", "9%", "5%", "15%", "5%", "", "6%", "10%", "5%", ]
+    // for (let i = 0; i < visibleHeaders.length; i++){
+        // widths.push( getWidth(headers.children[i]) );
+    // }
+
+    for (let i = 0; i < visibleHeaders.length; i++){
+        visibleHeaders[i].style.width = widths[i];
+    }
 }
