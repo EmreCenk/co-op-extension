@@ -16,6 +16,8 @@ function getNumberOfEntries(){
 }
 
 const azureMode = true;
+let headerIndex = 0;
+if ( azureMode ) headerIndex = 1;
 
 function getCollumIndex( collumName ){
     const collumheaders = document.getElementsByTagName("th");
@@ -92,10 +94,6 @@ function insertPercentageCollums( collumToInsertBefore ){
     }
 
     // we have to update the header at the end, otherwise it shifts everything, making getCollumIndex(_) unreliable
-    
-    let headerIndex = 0;
-    if ( azureMode ) headerIndex = 1;
-
     const header = rows[ headerIndex ].children[2];
     const childCopy = document.createElement("a");
     childCopy.innerText = "Hiring Probability";

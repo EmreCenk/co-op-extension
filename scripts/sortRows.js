@@ -1,13 +1,17 @@
 
-
+function getProbabilityIndex(){
+    const collumheaders = document.getElementsByTagName("th");
+    return getCollumIndex('probability') - ( azureMode ? collumheaders.length/2 : 0 );
+}
 
 function getProbabilityHeader(){
     const rows = getPostingRows();
-    return rows[0].children[ getCollumIndex('probability') ];
+    const probabilityIndex = getProbabilityIndex();
+    return rows[headerIndex].children[ probabilityIndex ];
 }
 
 function getRowPercentage( row ){
-    const probabilityIndex = getCollumIndex("probability");
+    const probabilityIndex = getProbabilityIndex();
     const percentageString = row.children[probabilityIndex].innerText;
     return parseFloat(percentageString);
 }
