@@ -89,13 +89,19 @@ function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     header.onclick = function(){ onclickFunction(); };
 }
 
-function bindToTableUpdates(){
+function addObserver(){
     const observer = new MutationObserver((mutations, observer) => {
-        if ( mutations.length >= postingsOnPage ) return
-        if ( getCollumIndex("probability") == -1 ){ // 1 is the default output if it doesn't find anything
+        console.log( mutations.length );
+        if ( mutations.length >= postingsOnPage && !dealWithShortlisting) return
+        if ( getCollumIndex("probability") == -1 || getCollumIndex("probability") == -2 ){ // 1 is the default output if it doesn't find anything
             insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
-            if ( isSorted ) insertSortedTables();
+            console.log("we're here boi");
+            if ( isSorted || dealWithShortlisting) {
+                console.log("dealing with shortlisting");
+                insertSortedTables();
+            }
+            dealWithShortlisting = false;
         }
       });
 
@@ -103,6 +109,10 @@ function bindToTableUpdates(){
         subtree: true,
         childList: true
     });
+}
+
+function bindToTableUpdates(){
+    addObserver();
 }
 
 function getTagsWithText(tag, text){
@@ -115,20 +125,22 @@ function getTagsWithText(tag, text){
     return finalElements;
 }
 
-// function handleShortlisting(){
-//     // shortlisting rerenders the page, which means we need to re-render our custom collum and the state it's in
-//     const shortListButtons = getTagsWithText("a", "shortlist");
-//     for (currentElem of shortListButtons){
-//         // if it used to be sorted, we need to restore that state:
-//         currentElem.addEventListener( "click",  function(){
-//                 console.log("clicked!", isSorted);
-//                 if (isSorted) handleTableSorting();
-//             }
-//         );
-//     }
-// }
+let dealWithShortlisting = false;
+function addShortlistButtonBindings(){
+    // shortlisting rerenders the page, which means we need to re-render our custom collum and the state it's in
+    const shortListButtons = getTagsWithText("a", "shortlist");
+    for (currentElem of shortListButtons){
+        // if it used to be sorted, we need to restore that state:
+        currentElem.addEventListener( "click",  function(){
+                console.log("clicked shortlist");
+                dealWithShortlisting = true;
+            }
+        );
+    }
+}
 
 const postingsOnPage = getPostingRows().length;
 bindToTableUpdates();
 insertPercentageCollums("ID");
 setHeaderOnclick( handleTableSorting );
+addShortlistButtonBindings();
