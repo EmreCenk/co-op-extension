@@ -94,7 +94,7 @@ function addObserver(){
         console.log( mutations.length );
         if ( mutations.length >= postingsOnPage && !dealWithShortlisting) return
         if ( getCollumIndex("probability") == -1 || getCollumIndex("probability") == -2 ){ // 1 is the default output if it doesn't find anything
-            insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
+            insertPercentageCollums(collumToInsertBefore); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
             console.log("we're here boi");
             if ( isSorted || dealWithShortlisting) {
@@ -138,9 +138,10 @@ function addShortlistButtonBindings(){
         );
     }
 }
-
+let collumToInsertBefore = "internal status";
+if (azureMode) collumToInsertBefore = "int status"
 const postingsOnPage = getPostingRows().length;
 bindToTableUpdates();
-insertPercentageCollums("ID");
+insertPercentageCollums(collumToInsertBefore);
 setHeaderOnclick( handleTableSorting );
 addShortlistButtonBindings();

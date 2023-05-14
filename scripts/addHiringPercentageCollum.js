@@ -125,7 +125,7 @@ function fixWidths(){
         if (window.getComputedStyle(h).display !== 'none') visibleHeaders.push(h);
     }
 
-    let widths = [ "", "", "9%", "5%", "15%", "5%", "", "6%", "10%", "5%", ]
+    let widths = [ "", "",  "5%", "15%", "5%", "9%", "", "6%", "10%", "5%", ]
     // for (let i = 0; i < visibleHeaders.length; i++){
         // widths.push( getWidth(headers.children[i]) );
     // }
