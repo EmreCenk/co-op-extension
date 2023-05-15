@@ -46,20 +46,20 @@ function replaceTable(rowsOnly){
     correctScrollbarWidth();
 }
 
-// function rowsAreSorted(){
-//     const rows = getPostingRows();
-//     const getJobProbability = mapJobIdToPercentage(rows);
-//     const idIndex = getCollumIndex("id");
-//     for (let i = 0; i < rows.length - 1; i++){
-//         const currentId = rows[i].children[idIndex].innerText;
-//         const nextId = rows[i+1].children[idIndex].innerText;
-//         if (currentId == "ID") continue; //header row;
-//         const currentProbability = getJobProbability[currentId];
-//         const nextProbablity = getJobProbability[nextId];
-//         if ( nextProbablity > currentProbability ) return false;
-//     }
-//     return true;
-// }
+function rowsAreSorted(){
+    const rows = getPostingRows();
+    const getJobProbability = mapJobIdToPercentage(rows);
+    const idIndex = getCollumIndex("id");
+    for (let i = 1; i < rows.length - 1; i++){
+        const currentId = rows[i].children[idIndex].innerText;
+        const nextId = rows[i+1].children[idIndex].innerText;
+        if (currentId == "ID") continue; //header row;
+        const currentProbability = getJobProbability[currentId];
+        const nextProbablity = getJobProbability[nextId];
+        if ( nextProbablity > currentProbability ) return false;
+    }
+    return true;
+}
 
 function insertSortedTables(){
 
@@ -71,15 +71,16 @@ function insertSortedTables(){
 
 let isSorted = false;
 function handleTableSorting(){
-    if (!isSorted){
+    // if (!isSorted){
+        isSorted = true;
         insertSortedTables();
-    }
-    else{
+    // }
+    // else{
         // const jobButton = getTagsWithText("a", "organization")[0];
         // jobButton.click();
-    }
+    // }
 
-    isSorted = !isSorted;
+    // isSorted = !isSorted;
 
 }
 
@@ -96,12 +97,14 @@ function addObserver(){
             insertPercentageCollums(collumToInsertBefore); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
             console.log("we're here boi");
-            if ( isSorted || dealWithShortlisting) {
-                console.log("dealing with shortlisting");
-                insertSortedTables();
-            }
-            dealWithShortlisting = false;
         }
+
+        if ( (isSorted || dealWithShortlisting) && !rowsAreSorted() ) {
+            console.log("dealing with shortlisting");
+            insertSortedTables();
+        }
+        dealWithShortlisting = false;
+
       });
 
     observer.observe(document, {
