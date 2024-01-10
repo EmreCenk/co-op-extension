@@ -86,6 +86,7 @@ function bindToTableUpdates(){
         if ( getCollumIndex("probability") == 1 ){ // 1 is the default output if it doesn't find anything
             insertPercentageCollums("ID"); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
+            widenJobBar();
         }
       });
 
@@ -105,6 +106,25 @@ function getTagsWithText(tag, text){
     return finalElements;
 }
 
+function getElemByText( text, tag = "th" ){
+    elements = document.getElementsByTagName(tag)
+    for (let e of elements){
+        if ( e.innerText == text ){
+            return e;
+        }
+    }
+    return null;
+}
+
+function widenJobBar(){
+    let jobCell = getElemByText("Job Title");
+    // jobCell.classList.remove("orgDivTitleMaxWidth");
+    let cur = parseInt(jobCell.style.paddingRight);
+    jobCell.style.paddingRight = String(Math.round(cur * 15)) + "px";
+
+}
+
+
 // function handleShortlisting(){
 //     // shortlisting rerenders the page, which means we need to re-render our custom collum and the state it's in
 //     const shortListButtons = getTagsWithText("a", "shortlist");
@@ -122,3 +142,4 @@ const postingsOnPage = getPostingRows().length;
 bindToTableUpdates();
 insertPercentageCollums("ID");
 setHeaderOnclick( handleTableSorting );
+widenJobBar();
