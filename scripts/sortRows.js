@@ -89,13 +89,32 @@ function setHeaderOnclick( onclickFunction = function() {alert('clicked');} ){
     header.onclick = function(){ onclickFunction(); };
 }
 
-function addObserver(){
+
+function getElemByText( text, tag = "th" ){
+    elements = document.getElementsByTagName(tag)
+    for (let e of elements){
+        if ( e.innerText == text ){
+            return e;
+        }
+    }
+    return null;
+}
+
+function widenJobBar(){
+    let jobCell = getElemByText("Job Title");
+    // jobCell.classList.remove("orgDivTitleMaxWidth");
+    let cur = parseInt(jobCell.style.paddingRight);
+    jobCell.style.paddingRight = String(Math.round(cur * 15)) + "px";
+
+}
+function bindToTableUpdates(){
     const observer = new MutationObserver((mutations, observer) => {
         console.log( mutations.length, dealWithShortlisting );
         // if ( mutations.length >= postingsOnPage && !dealWithShortlisting) return
         if ( getCollumIndex("probability") == -1 || getCollumIndex("probability") == -2 ){ 
             insertPercentageCollums(collumToInsertBefore); // defined in addHiringPercentateCollum.js 
             setHeaderOnclick( handleTableSorting );
+            widenJobBar();
             console.log("we're here boi");
         }
 
@@ -147,3 +166,4 @@ bindToTableUpdates();
 insertPercentageCollums(collumToInsertBefore);
 setHeaderOnclick( handleTableSorting );
 addShortlistButtonBindings();
+widenJobBar(); // can't read jac sh rn bc it's too narrow
